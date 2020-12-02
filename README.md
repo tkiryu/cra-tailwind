@@ -1,46 +1,73 @@
-# Getting Started with Create React App
+# Minimum setup to use TailwindCSS with create-react-app
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+1. Create CRA project
 
-## Available Scripts
+```
+npx create-react-app cra-tailwind --template typescript
+```
 
-In the project directory, you can run:
+2. Install and configure CRACO
 
-### `yarn start`
+TailwndCSS requires PostCSS so that you have to install CRACO to override create-react-app configuration.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+cd cra-tailwind
+npm i -D @craco/craco
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Then, create `craco.config.js` as below.
 
-### `yarn test`
+```
+module.exports = {
+  style: {
+    postcss: {
+      plugins: [
+        require("tailwindcss")("./tailwind.config.js"),
+        require("autoprefixer")
+      ],
+    },
+  },
+};
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. Install and configure TailwindCSS
 
-### `yarn build`
+Install PostCSS 7 compatibility packages.
+For some reason, some errors could occur when using PostCSS 8 for now. See more details in [PostCSS 7 compatibility build](https://tailwindcss.com/docs/installation#post-css-7-compatibility-build).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+npm i tailwindcss@npm:@tailwindcss/postcss7-compat postcss@^7 autoprefixer@^9
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Then, create `tailwind.config.js` files by `tailwindcss` command.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+npx tailwindcss init
+```
 
-### `yarn eject`
+Add any files that reference any tailwindcss classes to `purge` option.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+module.exports = {
+  purge: ['./src/**/*.tsx'], // add any files that reference any tailwindcss classes.
+  darkMode: false, // or 'media' or 'class'
+  theme: {
+    extend: {},
+  },
+  variants: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+4. Include Tailwind styles in you CSS
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+/* index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+That's it!
